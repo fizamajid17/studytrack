@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — StudyTrack{% endblock %}
+{% block content %}
+
+<div class="fade-up">
+  <!-- HEADER -->
+  <div class="d-flex justify-content-between align-items-start mb-4">
+    <div>
+      <h4 style="font-weight:700;margin-bottom:4px;">👋 Hey, {{ current_user.username }}!</h4>
+      <p style="color:#6b7280;font-size:0.88rem;margin:0;">Ready to study? Here's your overview.</p>
+    </div>
+    <a href="{{ url_for('main.subjects') }}" class="btn-purple">+ New Subject</a>
+  </div>
+
+  <!-- Card 1 -->
+<div class="card stat-card" style="border-left:4px solid #D4AF37;border-top:1px solid rgba(212,175,55,0.2);">
+  <div class="d-flex justify-content-between align-items-start">
+    <div>
+      <div class="stat-label mb-1">Total Subjects</div>
+      <div class="stat-num">{{ total_subjects }}</div>
+    </div>
+    <div style="background:rgba(212,175,55,0.1);padding:10px;border-radius:10px;font-size:1.3rem;">📚</div>
+  </div>
+  <div style="margin-top:12px;background:#f0f2f5;border-radius:4px;height:4px;">
+    <div style="background:linear-gradient(90deg,#D4AF37,#F5D060);height:4px;border-radius:4px;width:{{ [total_subjects * 10, 100] | min }}%;"></div>
+  </div>
+</div>
+
+<!-- Card 2 -->
+<div class="card stat-card" style="border-left:4px solid #0a1628;border-top:1px solid rgba(10,22,40,0.1);">
+  <div class="d-flex justify-content-between align-items-start">
+    <div>
+      <div class="stat-label mb-1">Quizzes Taken</div>
+      <div class="stat-num">{{ total_quizzes }}</div>
+    </div>
+    <div style="background:rgba(10,22,40,0.07);padding:10px;border-radius:10px;font-size:1.3rem;">⚡</div>
+  </div>
+  <div style="margin-top:12px;background:#f0f2f5;border-radius:4px;height:4px;">
+    <div style="background:linear-gradient(90deg,#0a1628,#1a3a6b);height:4px;border-radius:4px;width:{{ [total_quizzes * 5, 100] | min }}%;"></div>
+  </div>
+</div>
+
+<!-- Card 3 -->
+<div class="card stat-card" style="border-left:4px solid {% if avg_score >= 80 %}#22c55e{% elif avg_score >= 50 %}#f97316{% else %}#ef4444{% endif %};">
+  <div class="d-flex justify-content-between align-items-start">
+    <div>
+      <div class="stat-label mb-1">Average Score</div>
+      <div class="stat-num" style="color:{% if avg_score >= 80 %}#22c55e{% elif avg_score >= 50 %}#f97316{% else %}#ef4444{% endif %};">{{ avg_score }}%</div>
+    </div>
+    <div style="background:#fff7ed;padding:10px;border-radius:10px;font-size:1.3rem;">🎯</div>
+  </div>
+  <div style="margin-top:12px;background:#f0f2f5;border-radius:4px;height:4px;">
+    <div style="background:{% if avg_score >= 80 %}#22c55e{% elif avg_score >= 50 %}#f97316{% else %}#ef4444{% endif %};height:4px;border-radius:4px;width:{{ avg_score }}%;"></div>
+  </div>
+</div>
+
+  <div class="row g-3">
+    <!-- SUBJECTS TABLE -->
+    <div class="col-md-7">
+      <div class="card" style="overflow:hidden;">
+        <div class="d-flex justify-content-between align-items-center px-4 py-3"
+             style="border-bottom:1px solid #f0f0f0;">
+          <p style="font-weight:600;font-size:0.95rem;margin:0;">Your Subjects</p>
+          <a href="{{ url_for('main.subjects') }}"
+             style="font-size:0.82rem;color:#6c63ff;text-decoration:none;">View all →</a>
+        </div>
+        {% if subjects %}
+          {% for subject in subjects %}
+          <div class="d-flex align-items-center justify-content-between px-4 py-3"
+               style="border-bottom:1px solid #f9fafb;transition:background 0.15s;"
+               onmouseover="this.style.background='#f9fafb'"
+               onmouseout="this.style.background='transparent'">
+            <div class="d-flex align-items-center gap-3">
+              <div style="width:36px;height:36px;border-radius:10px;
+                background:{% if subject.color == 'blue' %}#eff6ff{% elif subject.color == 'green' %}#f0fdf4{% elif subject.color == 'purple' %}#faf5ff{% elif subject.color == 'orange' %}#fff7ed{% elif subject.color == 'red' %}#fef2f2{% else %}#f0fdfa{% endif %};
+                display:flex;align-items:center;justify-content:center;font-size:1rem;">
+                📖
+              </div>
+              <div>
+                <p style="font-size:0.9rem;font-weight:500;margin:0;">{{ subject.name }}</p>
+                <p style="font-size:0.75rem;color:#9ca3af;margin:0;">
+                  {{ subject.notes | length }} note{% if subject.notes | length != 1 %}s{% endif %} ·
+                  {{ subject.quizzes | length }} quiz{% if subject.quizzes | length != 1 %}zes{% endif %}
+                </p>
+              </div>
+            </div>
+            <div class="d-flex gap-2">
+              <a href="{{ url_for('main.notes', subject_id=subject.id) }}"
+                 class="btn btn-sm btn-outline-secondary" style="font-size:0.75rem;border-radius:6px;">📝 Notes</a>
+              <a href="{{ url_for('main.quiz', subject_id=subject.id) }}"
+                 class="btn-purple btn btn-sm" style="font-size:0.75rem;border-radius:6px;">⚡ Quiz</a>
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div style="text-align:center;padding:3rem;">
+            <div style="font-size:3rem;margin-bottom:10px;">📚</div>
+            <p style="color:#9ca3af;font-size:0.88rem;margin-bottom:12px;">No subjects yet</p>
+            <a href="{{ url_for('main.subjects') }}" class="btn-purple"
+               style="padding:8px 20px;font-size:0.85rem;">Add your first subject</a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- RECENT RESULTS -->
+    <div class="col-md-5">
+      <div class="card" style="overflow:hidden;">
+        <div class="px-4 py-3" style="border-bottom:1px solid #f0f0f0;">
+          <p style="font-weight:600;font-size:0.95rem;margin:0;">Recent Quiz Results</p>
+        </div>
+        {% if recent_quizzes %}
+          {% for q in recent_quizzes %}
+          {% set pct = (q.score / q.total * 100) | int %}
+          <div class="px-4 py-3" style="border-bottom:1px solid #f9fafb;">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <span style="font-size:0.88rem;font-weight:500;">{{ q.subject.name }}</span>
+              <span class="badge-score {% if pct >= 80 %}score-high{% elif pct >= 50 %}score-mid{% else %}score-low{% endif %}">
+                {{ q.score }}/{{ q.total }}
+              </span>
+            </div>
+            <div style="background:#f3f4f6;border-radius:4px;height:5px;margin-top:6px;">
+              <div style="background:{% if pct >= 80 %}#22c55e{% elif pct >= 50 %}#f97316{% else %}#ef4444{% endif %};
+                height:5px;border-radius:4px;width:{{ pct }}%;"></div>
+            </div>
+            <p style="font-size:0.72rem;color:#9ca3af;margin:4px 0 0;">
+              {{ q.taken_at.strftime('%b %d, %Y') }} · {{ pct }}%
+            </p>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div style="text-align:center;padding:3rem;">
+            <div style="font-size:3rem;margin-bottom:10px;">🎯</div>
+            <p style="color:#9ca3af;font-size:0.85rem;">No quizzes taken yet</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Quiz — {{ subject.name }}{% endblock %}
+{% block content %}
+<p class="page-title">⚡ Quiz — {{ subject.name }}</p>
+
+<form method="POST" action="{{ url_for('main.submit_quiz', subject_id=subject.id) }}">
+  {% for q in questions %}
+  {% set outer_index = loop.index0 %}
+  <div class="card p-3 mb-3">
+    <p style="font-weight:500;font-size:0.95rem;margin-bottom:1rem;">
+      {{ loop.index }}. {{ q.question }}
+    </p>
+    {% for option in q.options %}
+    <div class="form-check mb-2">
+      <input class="form-check-input" type="radio"
+             name="q{{ outer_index }}"
+             id="q{{ outer_index }}_{{ loop.index }}"
+             value="{{ option }}" required>
+      <label class="form-check-label" for="q{{ outer_index }}_{{ loop.index }}"
+             style="font-size:0.9rem;">{{ option }}</label>
+    </div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+  <button type="submit" class="btn btn-purple px-4">Submit Quiz</button>
+  <a href="{{ url_for('main.notes', subject_id=subject.id) }}"
+     class="btn btn-outline-secondary ms-2">Back to notes</a>
+</form>
+{% endblock %}

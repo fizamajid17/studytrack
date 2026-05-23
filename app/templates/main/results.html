@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Results — StudyTrack{% endblock %}
+{% block content %}
+<p class="page-title">📊 Quiz Results</p>
+
+{% set pct = (score / total * 100) | int %}
+<div class="card p-4 mb-4 text-center" style="max-width:400px;">
+  <div style="font-size:3rem;font-weight:700;color:
+    {% if pct >= 80 %}#22c55e{% elif pct >= 50 %}#f97316{% else %}#ef4444{% endif %};">
+    {{ score }}/{{ total }}
+  </div>
+  <div style="font-size:1rem;color:#6b7280;margin-top:4px;">{{ pct }}%</div>
+  <div style="font-size:0.9rem;margin-top:8px;">
+    {% if pct >= 80 %}🎉 Excellent work!
+    {% elif pct >= 50 %}📖 Good effort, keep studying!
+    {% else %}💪 Keep going, you'll get there!
+    {% endif %}
+  </div>
+</div>
+
+{% for r in results %}
+<div class="card p-3 mb-2" style="border-left:4px solid
+  {% if r.is_correct %}#22c55e{% else %}#ef4444{% endif %};">
+  <p style="font-weight:500;font-size:0.9rem;margin-bottom:8px;">{{ loop.index }}. {{ r.question }}</p>
+  {% for option in r.options %}
+  <div style="font-size:0.85rem;padding:4px 8px;border-radius:4px;margin-bottom:4px;
+    background:{% if option == r.correct %}#dcfce7{% elif option == r.selected and not r.is_correct %}#fee2e2{% else %}transparent{% endif %};">
+    {{ option }}
+    {% if option == r.correct %} ✓{% endif %}
+    {% if option == r.selected and not r.is_correct %} ✗{% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% endfor %}
+
+<div class="mt-3 d-flex gap-2">
+  <a href="{{ url_for('main.quiz', subject_id=subject_id) }}" class="btn btn-purple">Retake Quiz</a>
+  <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-secondary">Dashboard</a>
+</div>
+{% endblock %}

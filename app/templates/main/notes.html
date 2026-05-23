@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}Notes — {{ subject.name }}{% endblock %}
+{% block content %}
+
+<div class="d-flex align-items-center gap-3 mb-4">
+  <a href="{{ url_for('main.subjects') }}" style="color:#6b7280;text-decoration:none;font-size:0.88rem;">← Subjects</a>
+  <span style="color:#d1d5db;">/</span>
+  <div class="d-flex align-items-center gap-2">
+    <span class="subject-dot color-{{ subject.color }}"></span>
+    <span style="font-weight:600;">{{ subject.name }}</span>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-md-8">
+    <div class="card p-4">
+      <p style="font-weight:600;font-size:1rem;margin-bottom:0.3rem;">📝 Your Notes</p>
+      <p style="font-size:0.82rem;color:#6b7280;margin-bottom:1.25rem;">
+        Type, paste, or upload your notes. The AI uses this to generate quiz questions.
+      </p>
+
+      <div class="mb-3">
+        <div style="display:flex;gap:8px;margin-bottom:1rem;">
+          <button onclick="showTab('type')" id="tab-type"
+            style="padding:7px 16px;border-radius:6px;border:1px solid #6c63ff;background:#6c63ff;color:#fff;font-size:0.82rem;cursor:pointer;">
+            ✏️ Type notes
+          </button>
+          <button onclick="showTab('upload')" id="tab-upload"
+            style="padding:7px 16px;border-radius:6px;border:1px solid #e5e7eb;background:#fff;color:#374151;font-size:0.82rem;cursor:pointer;">
+            📁 Upload file
+          </button>
+        </div>
+
+        <!-- TYPE TAB -->
+        <div id="tab-type-content">
+          <form method="POST">
+            {{ form.hidden_tag() }}
+            {{ form.content(class="form-control", rows=12,
+               placeholder="Paste or type your notes here...\n\nExample:\nA linked list is a linear data structure where each element is a separate object called a node. Each node contains data and a reference to the next node in the sequence...") }}
+            {% for e in form.content.errors %}<small class="text-danger">{{ e }}</small>{% endfor %}
+            <div class="d-flex gap-2 mt-3">
+              {{ form.submit(class="btn btn-purple") }}
+              <a href="{{ url_for('main.quiz', subject_id=subject.id) }}"
+                 class="btn btn-outline-secondary">⚡ Generate Quiz</a>
+            </div>
+          </form>
+        </div>
+
+        <!-- UPLOAD TAB -->
+        <div id="tab-upload-content" style="display:none;">
+          <form method="POST" action="{{ url_for('main.upload_notes', subject_id=subject.id) }}"
+                enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="{{ form.csrf_token._value() }}">
+            <div style="border:2px dashed #d1d5db;border-radius:10px;padding:2rem;text-align:center;cursor:pointer;"
+                 onclick="document.getElementById('file-input').click()">
+              <div style="font-size:2rem;margin-bottom:8px;">📁</div>
+              <p style="font-size:0.88rem;color:#6b7280;margin:0;">Click to upload PDF or TXT file</p>
+              <p style="font-size:0.78rem;color:#9ca3af;margin:4px 0 0;">Max 5MB</p>
+            </div>
+            <input type="file" id="file-input" name="file" accept=".pdf,.txt"
+                   style="display:none;" onchange="showFilename(this)"/>
+            <p id="filename-display" style="font-size:0.82rem;color:#6c63ff;margin-top:8px;"></p>
+            <button type="submit" class="btn btn-purple mt-3">Upload & Save Notes</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card p-3 mb-3">
+      <p style="font-weight:600;font-size:0.9rem;margin-bottom:0.75rem;">💡 Tips for better quizzes</p>
+      <ul style="font-size:0.82rem;color:#6b7280;padding-left:1.2rem;line-height:2;">
+        <li>Write at least 10+ lines</li>
+        <li>Include definitions & key terms</li>
+        <li>Add facts, dates, formulas</li>
+        <li>Avoid bullet-only notes — write full sentences</li>
+        <li>More detail = better questions</li>
+      </ul>
+    </div>
+    {% if note %}
+    <div class="card p-3" style="border-left:4px solid #22c55e;">
+      <p style="font-weight:600;font-size:0.88rem;margin-bottom:4px;">✅ Notes saved</p>
+      <p style="font-size:0.78rem;color:#6b7280;margin:0;">
+        {{ note.content | length }} characters · Last updated {{ note.created_at.strftime('%b %d') }}
+      </p>
+      <a href="{{ url_for('main.quiz', subject_id=subject.id) }}"
+         class="btn btn-purple mt-2" style="font-size:0.82rem;padding:7px 14px;">⚡ Generate Quiz</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+function showTab(tab) {
+  document.getElementById('tab-type-content').style.display = tab === 'type' ? 'block' : 'none';
+  document.getElementById('tab-upload-content').style.display = tab === 'upload' ? 'block' : 'none';
+  document.getElementById('tab-type').style.background = tab === 'type' ? '#6c63ff' : '#fff';
+  document.getElementById('tab-type').style.color = tab === 'type' ? '#fff' : '#374151';
+  document.getElementById('tab-upload').style.background = tab === 'upload' ? '#6c63ff' : '#fff';
+  document.getElementById('tab-upload').style.color = tab === 'upload' ? '#fff' : '#374151';
+}
+function showFilename(input) {
+  document.getElementById('filename-display').textContent = '📄 ' + input.files[0]?.name;
+}
+</script>
+{% endblock %}

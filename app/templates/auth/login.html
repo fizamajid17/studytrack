@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>StudyTrack — Learn Smarter</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    * { font-family: 'Inter', sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0f0e17; color: #fff; overflow-x: hidden; }
+
+    /* NAVBAR */
+    .top-nav {
+      position: fixed; top: 0; width: 100%; z-index: 999;
+      padding: 1rem 3rem;
+      display: flex; justify-content: space-between; align-items: center;
+      background: rgba(15,14,23,0.85); backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .brand { font-size: 1.3rem; font-weight: 700; color: #fff; text-decoration: none; }
+    .brand span { color: #6c63ff; }
+    .nav-btns a {
+      padding: 8px 20px; border-radius: 8px; font-size: 0.88rem;
+      text-decoration: none; font-weight: 500;
+    }
+    .btn-ghost { color: #a0a3b1; }
+    .btn-ghost:hover { color: #fff; }
+    .btn-fill { background: #6c63ff; color: #fff; margin-left: 8px; }
+    .btn-fill:hover { background: #5a52d5; color: #fff; }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex; align-items: center;
+      padding: 6rem 3rem 4rem;
+      background: radial-gradient(ellipse at 60% 50%, rgba(108,99,255,0.15) 0%, transparent 60%);
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(108,99,255,0.2); color: #a89fff;
+      border: 1px solid rgba(108,99,255,0.3);
+      padding: 6px 16px; border-radius: 20px;
+      font-size: 0.8rem; font-weight: 500; margin-bottom: 1.5rem;
+    }
+    .hero h1 {
+      font-size: 3.5rem; font-weight: 800; line-height: 1.15;
+      margin-bottom: 1.25rem; letter-spacing: -1px;
+    }
+    .hero h1 span { color: #6c63ff; }
+    .hero p {
+      font-size: 1.1rem; color: #a0a3b1; line-height: 1.7;
+      margin-bottom: 2rem; max-width: 480px;
+    }
+    .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; }
+    .cta-primary {
+      background: #6c63ff; color: #fff;
+      padding: 14px 32px; border-radius: 10px;
+      font-size: 1rem; font-weight: 600; text-decoration: none;
+      transition: all 0.2s; display: inline-block;
+    }
+    .cta-primary:hover { background: #5a52d5; color: #fff; transform: translateY(-2px); }
+    .cta-secondary {
+      background: rgba(255,255,255,0.08); color: #fff;
+      padding: 14px 32px; border-radius: 10px;
+      font-size: 1rem; font-weight: 500; text-decoration: none;
+      border: 1px solid rgba(255,255,255,0.12);
+      transition: all 0.2s; display: inline-block;
+    }
+    .cta-secondary:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+    /* MOCK UI CARD */
+    .hero-visual {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px; padding: 1.5rem;
+      backdrop-filter: blur(10px);
+    }
+    .mock-bar { height: 8px; border-radius: 4px; margin-bottom: 10px; }
+    .mock-card {
+      background: rgba(108,99,255,0.15); border-radius: 10px;
+      padding: 14px; margin-bottom: 10px;
+      border: 1px solid rgba(108,99,255,0.2);
+    }
+    .mock-stat { display: flex; gap: 10px; margin-bottom: 10px; }
+    .mock-stat-box {
+      flex: 1; background: rgba(255,255,255,0.05);
+      border-radius: 10px; padding: 14px;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .mock-num { font-size: 1.6rem; font-weight: 700; color: #6c63ff; }
+    .mock-label { font-size: 0.72rem; color: #a0a3b1; }
+
+    /* FEATURES */
+    .features { padding: 5rem 3rem; background: #13121f; }
+    .features h2 { font-size: 2.2rem; font-weight: 700; text-align: center; margin-bottom: 0.5rem; }
+    .features-sub { text-align: center; color: #a0a3b1; margin-bottom: 3rem; }
+    .feature-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px; padding: 2rem;
+      transition: all 0.3s;
+    }
+    .feature-card:hover {
+      background: rgba(108,99,255,0.08);
+      border-color: rgba(108,99,255,0.3);
+      transform: translateY(-4px);
+    }
+    .feature-icon { font-size: 2rem; margin-bottom: 1rem; }
+    .feature-title { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
+    .feature-desc { font-size: 0.88rem; color: #a0a3b1; line-height: 1.6; }
+
+    /* HOW IT WORKS */
+    .how { padding: 5rem 3rem; }
+    .how h2 { font-size: 2.2rem; font-weight: 700; text-align: center; margin-bottom: 3rem; }
+    .step-num {
+      width: 48px; height: 48px; background: #6c63ff;
+      border-radius: 50%; display: flex; align-items: center;
+      justify-content: center; font-weight: 700; font-size: 1.1rem;
+      margin: 0 auto 1rem;
+    }
+    .step-title { font-size: 1rem; font-weight: 600; text-align: center; margin-bottom: 0.5rem; }
+    .step-desc { font-size: 0.85rem; color: #a0a3b1; text-align: center; }
+
+    /* LOGIN SECTION */
+    .login-section {
+      padding: 5rem 3rem;
+      background: #13121f;
+      display: flex; justify-content: center;
+    }
+    .login-box {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px; padding: 2.5rem;
+      width: 100%; max-width: 420px;
+    }
+    .login-box h4 { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.4rem; }
+    .login-box p { color: #a0a3b1; font-size: 0.88rem; margin-bottom: 1.5rem; }
+    .form-control {
+      background: rgba(255,255,255,0.06) !important;
+      border: 1px solid rgba(255,255,255,0.1) !important;
+      color: #fff !important; border-radius: 8px; padding: 10px 14px;
+    }
+    .form-control:focus {
+      background: rgba(255,255,255,0.08) !important;
+      border-color: #6c63ff !important;
+      box-shadow: 0 0 0 3px rgba(108,99,255,0.2) !important;
+    }
+    .form-control::placeholder { color: #6b7280 !important; }
+    .form-label { color: #d1d5db; font-size: 0.88rem; font-weight: 500; }
+    .btn-login {
+      background: #6c63ff; color: #fff; border: none;
+      width: 100%; padding: 12px; border-radius: 8px;
+      font-weight: 600; font-size: 0.95rem;
+      transition: all 0.2s; cursor: pointer;
+    }
+    .btn-login:hover { background: #5a52d5; transform: translateY(-1px); }
+
+    /* FOOTER */
+    .footer {
+      padding: 2rem 3rem; border-top: 1px solid rgba(255,255,255,0.06);
+      display: flex; justify-content: space-between; align-items: center;
+      background: #0f0e17;
+    }
+    .footer p { color: #a0a3b1; font-size: 0.82rem; margin: 0; }
+
+    /* SCROLL ANIMATION */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up { animation: fadeUp 0.6s ease forwards; }
+    .delay-1 { animation-delay: 0.1s; opacity: 0; }
+    .delay-2 { animation-delay: 0.2s; opacity: 0; }
+    .delay-3 { animation-delay: 0.3s; opacity: 0; }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="top-nav">
+  <a class="brand" href="#">Study<span>Track</span></a>
+  <div class="nav-btns">
+    <a href="#login" class="btn-ghost">Log in</a>
+    <a href="{{ url_for('auth.register') }}" class="btn-fill">Get started free</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container-fluid">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6 fade-up">
+        <div class="hero-badge">✨ AI-powered study assistant</div>
+        <h1>Study smarter.<br>Learn <span>faster.</span></h1>
+        <p>Add your study notes, let AI generate quiz questions instantly, and track your progress — all in one place built for students.</p>
+        <div class="hero-cta">
+          <a href="{{ url_for('auth.register') }}" class="cta-primary">Start for free →</a>
+          <a href="#how-it-works" class="cta-secondary">See how it works</a>
+        </div>
+      </div>
+      <div class="col-lg-6 fade-up delay-2">
+        <div class="hero-visual">
+          <div class="mock-stat">
+            <div class="mock-stat-box">
+              <div class="mock-num">8</div>
+              <div class="mock-label">Subjects</div>
+            </div>
+            <div class="mock-stat-box">
+              <div class="mock-num">24</div>
+              <div class="mock-label">Quizzes taken</div>
+            </div>
+            <div class="mock-stat-box">
+              <div class="mock-num">87%</div>
+              <div class="mock-label">Avg score</div>
+            </div>
+          </div>
+          <div class="mock-card">
+            <div style="font-size:0.8rem;color:#a89fff;margin-bottom:8px;">⚡ AI Quiz — Data Structures</div>
+            <div class="mock-bar" style="background:#6c63ff;width:80%;"></div>
+            <div class="mock-bar" style="background:rgba(255,255,255,0.1);width:60%;"></div>
+            <div class="mock-bar" style="background:rgba(255,255,255,0.1);width:90%;"></div>
+            <div style="font-size:0.75rem;color:#a0a3b1;margin-top:8px;">4/5 correct — 80% 🎉</div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <div style="flex:1;background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.2);border-radius:8px;padding:10px;font-size:0.78rem;color:#86efac;">📚 Operating Systems</div>
+            <div style="flex:1;background:rgba(108,99,255,0.15);border:1px solid rgba(108,99,255,0.2);border-radius:8px;padding:10px;font-size:0.78rem;color:#a89fff;">📝 Notes saved</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="container">
+    <h2>Everything you need to ace exams</h2>
+    <p class="features-sub">Built specifically for engineering and university students</p>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon">🧠</div>
+          <div class="feature-title">AI Quiz Generator</div>
+          <div class="feature-desc">Paste your notes and our AI instantly creates multiple choice questions tailored to your content.</div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon">📁</div>
+          <div class="feature-title">Upload Notes</div>
+          <div class="feature-desc">Upload PDF or text files directly. No need to retype — just upload and start quizzing.</div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <div class="feature-title">Progress Tracking</div>
+          <div class="feature-desc">See your quiz scores over time, track weak subjects, and measure improvement.</div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon">📚</div>
+          <div class="feature-title">Subject Manager</div>
+          <div class="feature-desc">Organize all your subjects in one place with color tags and dedicated note sections.</div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <div class="feature-title">Instant Results</div>
+          <div class="feature-desc">Get detailed feedback after every quiz — see what you got right and what to revisit.</div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon">🔒</div>
+          <div class="feature-title">Private & Secure</div>
+          <div class="feature-desc">Your notes and scores are private to your account. No one else can see your data.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how-it-works">
+  <div class="container">
+    <h2>How it works</h2>
+    <div class="row g-4">
+      <div class="col-md-3">
+        <div class="step-num">1</div>
+        <div class="step-title">Create an account</div>
+        <div class="step-desc">Sign up free in 30 seconds. No credit card needed.</div>
+      </div>
+      <div class="col-md-3">
+        <div class="step-num">2</div>
+        <div class="step-title">Add your subjects</div>
+        <div class="step-desc">Create subjects for each of your courses or topics.</div>
+      </div>
+      <div class="col-md-3">
+        <div class="step-num">3</div>
+        <div class="step-title">Upload your notes</div>
+        <div class="step-desc">Paste text or upload a PDF — our AI reads it all.</div>
+      </div>
+      <div class="col-md-3">
+        <div class="step-num">4</div>
+        <div class="step-title">Take the quiz</div>
+        <div class="step-desc">AI generates questions instantly. Take the quiz and see your score.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LOGIN -->
+<section class="login-section" id="login">
+  <div class="login-box">
+    <h4>Welcome back</h4>
+    <p>Log in to your StudyTrack account</p>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} mb-3" style="font-size:0.85rem;">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    <form method="POST">
+      {{ form.hidden_tag() }}
+      <div class="mb-3">
+        {{ form.email.label(class="form-label") }}
+        {{ form.email(class="form-control", placeholder="you@email.com") }}
+        {% for e in form.email.errors %}<small class="text-danger">{{ e }}</small>{% endfor %}
+      </div>
+      <div class="mb-4">
+        {{ form.password.label(class="form-label") }}
+        {{ form.password(class="form-control", placeholder="••••••••") }}
+        {% for e in form.password.errors %}<small class="text-danger">{{ e }}</small>{% endfor %}
+      </div>
+      <button type="submit" class="btn-login">Log in →</button>
+    </form>
+    <p style="text-align:center;margin-top:1.25rem;font-size:0.85rem;color:#a0a3b1;">
+      No account? <a href="{{ url_for('auth.register') }}" style="color:#6c63ff;">Sign up free</a>
+    </p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <p>© 2026 StudyTrack. Built for students.</p>
+  <p>Made with 🤍 using Python & Flask</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Smooth scroll
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      document.querySelector(a.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}Subjects — StudyTrack{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h4 style="font-weight:700;margin-bottom:4px;">📚 Subjects</h4>
+    <p style="color:#6b7280;font-size:0.88rem;margin:0;">Manage your study subjects</p>
+  </div>
+</div>
+
+<div class="row g-4">
+  <!-- ADD SUBJECT FORM -->
+  <div class="col-md-4">
+    <div class="card p-4" style="position:sticky;top:20px;">
+      <p style="font-weight:600;font-size:0.95rem;margin-bottom:1.25rem;">➕ Add New Subject</p>
+      <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="mb-3">
+          {{ form.name.label(class="form-label") }}
+          {{ form.name(class="form-control", placeholder="e.g. Data Structures") }}
+          {% for e in form.name.errors %}<small class="text-danger">{{ e }}</small>{% endfor %}
+        </div>
+        <div class="mb-4">
+          {{ form.color.label(class="form-label") }}
+          {{ form.color(class="form-select") }}
+        </div>
+        {{ form.submit(class="btn btn-purple w-100") }}
+      </form>
+    </div>
+  </div>
+
+  <!-- SUBJECT CARDS GRID -->
+  <div class="col-md-8">
+    {% if subjects %}
+    <div class="row g-3">
+      {% for subject in subjects %}
+      {% set note_count = subject.notes | length %}
+      {% set quiz_count = subject.quizzes | length %}
+      <div class="col-md-6">
+        <div class="card p-3" style="transition:all 0.2s;cursor:default;"
+             onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,0.1)'"
+             onmouseout="this.style.transform='translateY(0)';this.style.boxShadow=''">
+          <!-- HEADER -->
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <div class="d-flex align-items-center gap-2">
+              <div style="width:38px;height:38px;border-radius:10px;
+                background:{% if subject.color == 'blue' %}#eff6ff{% elif subject.color == 'green' %}#f0fdf4{% elif subject.color == 'purple' %}#faf5ff{% elif subject.color == 'orange' %}#fff7ed{% elif subject.color == 'red' %}#fef2f2{% else %}#f0fdfa{% endif %};
+                display:flex;align-items:center;justify-content:center;">
+                <span class="subject-dot color-{{ subject.color }}"></span>
+              </div>
+              <span style="font-weight:600;font-size:0.92rem;">{{ subject.name }}</span>
+            </div>
+            <form method="POST" action="{{ url_for('main.delete_subject', subject_id=subject.id) }}"
+                  onsubmit="return confirm('Delete {{ subject.name }}?')">
+              <button style="background:none;border:none;color:#d1d5db;cursor:pointer;font-size:1rem;padding:2px 6px;"
+                      onmouseover="this.style.color='#ef4444'"
+                      onmouseout="this.style.color='#d1d5db'">✕</button>
+            </form>
+          </div>
+
+          <!-- STATS -->
+          <div class="d-flex gap-2 mb-3">
+            <div style="flex:1;background:#f9fafb;border-radius:8px;padding:8px;text-align:center;">
+              <div style="font-size:1.1rem;font-weight:700;color:#6c63ff;">{{ note_count }}</div>
+              <div style="font-size:0.7rem;color:#9ca3af;">Notes</div>
+            </div>
+            <div style="flex:1;background:#f9fafb;border-radius:8px;padding:8px;text-align:center;">
+              <div style="font-size:1.1rem;font-weight:700;color:#22c55e;">{{ quiz_count }}</div>
+              <div style="font-size:0.7rem;color:#9ca3af;">Quizzes</div>
+            </div>
+            {% if quiz_count > 0 %}
+            {% set last = subject.quizzes | last %}
+            {% set pct = (last.score / last.total * 100) | int %}
+            <div style="flex:1;background:#f9fafb;border-radius:8px;padding:8px;text-align:center;">
+              <div style="font-size:1.1rem;font-weight:700;color:{% if pct >= 80 %}#22c55e{% elif pct >= 50 %}#f97316{% else %}#ef4444{% endif %};">{{ pct }}%</div>
+              <div style="font-size:0.7rem;color:#9ca3af;">Best</div>
+            </div>
+            {% endif %}
+          </div>
+
+          <!-- ACTIONS -->
+          <div class="d-flex gap-2">
+            <a href="{{ url_for('main.notes', subject_id=subject.id) }}"
+               style="flex:1;text-align:center;padding:8px;border-radius:8px;border:1px solid #e5e7eb;
+               font-size:0.82rem;color:#374151;text-decoration:none;transition:all 0.15s;"
+               onmouseover="this.style.background='#f9fafb'"
+               onmouseout="this.style.background='transparent'">📝 Notes</a>
+            <a href="{{ url_for('main.quiz', subject_id=subject.id) }}"
+               style="flex:1;text-align:center;padding:8px;border-radius:8px;
+               background:#6c63ff;font-size:0.82rem;color:#fff;text-decoration:none;transition:all 0.15s;"
+               onmouseover="this.style.background='#5a52d5'"
+               onmouseout="this.style.background='#6c63ff'">⚡ Quiz</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+      <div style="text-align:center;padding:4rem 0;">
+        <div style="font-size:4rem;margin-bottom:12px;">📚</div>
+        <p style="color:#9ca3af;font-size:0.95rem;">No subjects yet. Add your first one!</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

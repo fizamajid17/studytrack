@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Quiz — StudyTrack{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h4 style="font-weight:700;margin-bottom:4px;">⚡ Quiz</h4>
+    <p style="color:#6b7280;font-size:0.88rem;margin:0;">Test yourself on your notes</p>
+  </div>
+</div>
+
+{% if subjects %}
+<div class="row g-3">
+  {% for subject in subjects %}
+  {% set note = subject.notes | first %}
+  {% set quiz_count = subject.quizzes | length %}
+  <div class="col-md-4">
+    <div class="card p-3" style="transition:all 0.2s;"
+         onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(0,0,0,0.08)'"
+         onmouseout="this.style.transform='translateY(0)';this.style.boxShadow=''">
+
+      <!-- TOP -->
+      <div class="d-flex align-items-center gap-2 mb-3">
+        <div style="width:36px;height:36px;border-radius:10px;
+          background:{% if subject.color == 'blue' %}#eff6ff{% elif subject.color == 'green' %}#f0fdf4{% elif subject.color == 'purple' %}#faf5ff{% elif subject.color == 'orange' %}#fff7ed{% elif subject.color == 'red' %}#fef2f2{% else %}#f0fdfa{% endif %};
+          display:flex;align-items:center;justify-content:center;">
+          <span class="subject-dot color-{{ subject.color }}"></span>
+        </div>
+        <div>
+          <p style="font-weight:600;font-size:0.92rem;margin:0;">{{ subject.name }}</p>
+          <p style="font-size:0.72rem;color:#9ca3af;margin:0;">{{ quiz_count }} quiz{{ 'zes' if quiz_count != 1 else '' }} taken</p>
+        </div>
+      </div>
+
+      <!-- SCORE HISTORY -->
+      {% if quiz_count > 0 %}
+      <div style="background:#f9fafb;border-radius:8px;padding:10px;margin-bottom:12px;">
+        <p style="font-size:0.72rem;color:#9ca3af;margin-bottom:8px;font-weight:500;">SCORE HISTORY</p>
+        <div style="display:flex;align-items:flex-end;gap:4px;height:40px;">
+          {% for q in subject.quizzes[-6:] %}
+          {% set pct = (q.score / q.total * 100) | int %}
+          <div style="flex:1;background:{% if pct >= 80 %}#22c55e{% elif pct >= 50 %}#f97316{% else %}#ef4444{% endif %};
+               border-radius:3px 3px 0 0;height:{{ [pct * 0.4, 4] | max }}px;
+               transition:height 0.3s;" title="{{ pct }}%"></div>
+          {% endfor %}
+        </div>
+        {% set last = subject.quizzes | last %}
+        {% set pct = (last.score / last.total * 100) | int %}
+        <p style="font-size:0.75rem;margin-top:6px;margin-bottom:0;">
+          Last: <span class="badge-score {% if pct >= 80 %}score-high{% elif pct >= 50 %}score-mid{% else %}score-low{% endif %}">
+            {{ last.score }}/{{ last.total }}
+          </span>
+        </p>
+      </div>
+      {% else %}
+      <div style="background:#f9fafb;border-radius:8px;padding:12px;margin-bottom:12px;text-align:center;">
+        <p style="font-size:0.82rem;color:#9ca3af;margin:0;">Not attempted yet</p>
+      </div>
+      {% endif %}
+
+      <!-- ACTION -->
+      {% if note %}
+      <a href="{{ url_for('main.quiz', subject_id=subject.id) }}"
+         style="display:block;text-align:center;padding:9px;border-radius:8px;
+         background:#6c63ff;color:#fff;font-size:0.85rem;text-decoration:none;
+         font-weight:500;transition:all 0.15s;"
+         onmouseover="this.style.background='#5a52d5'"
+         onmouseout="this.style.background='#6c63ff'">
+        ⚡ {{ 'Retake Quiz' if quiz_count > 0 else 'Generate Quiz' }}
+      </a>
+      {% else %}
+      <a href="{{ url_for('main.notes', subject_id=subject.id) }}"
+         style="display:block;text-align:center;padding:9px;border-radius:8px;
+         border:1px solid #e5e7eb;color:#374151;font-size:0.85rem;
+         text-decoration:none;transition:all 0.15s;"
+         onmouseover="this.style.background='#f9fafb'"
+         onmouseout="this.style.background='transparent'">
+        📝 Add Notes First
+      </a>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+  <div style="text-align:center;padding:4rem 0;">
+    <div style="font-size:4rem;margin-bottom:12px;">⚡</div>
+    <p style="color:#9ca3af;">No subjects yet. <a href="{{ url_for('main.subjects') }}" style="color:#6c63ff;">Add one first.</a></p>
+  </div>
+{% endif %}
+{% endblock %}
